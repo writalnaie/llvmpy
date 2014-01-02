@@ -283,6 +283,7 @@ class ConstantExpr:
         args[1] = extra.make_small_vector_from_unsigned(*valuelist)
         return ConstantExpr._getInsertValue(*args)
 
+    getPredicate = Method(cast(Unsigned, int))
     getOpcode = Method(cast(Unsigned, int))
     getOpcodeName = Method(cast(ConstCharPtr, str))
     isCast = Method(cast(Bool, bool))
