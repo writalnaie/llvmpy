@@ -2,8 +2,8 @@ from binding import *
 from .namespace import llvm
 from .Value import Value, User
 from .Value import Constant, UndefValue, ConstantInt, ConstantFP, ConstantArray
-from .Value import ConstantStruct, ConstantVector, ConstantVector
-from .Value import ConstantDataSequential, ConstantDataArray, ConstantExpr
+from .Value import ConstantStruct, ConstantVector, ConstantAggregateZero, ConstantPointerNull
+from .Value import ConstantDataSequential, ConstantDataArray, ConstantDataVector, ConstantExpr
 from .LLVMContext import LLVMContext
 from .ADT.StringRef import StringRef
 from .ADT.SmallVector import SmallVector_Value, SmallVector_Unsigned
@@ -48,6 +48,8 @@ class Constant:
 
 @UndefValue
 class UndefValue:
+    _downcast_ = Constant, User, Value
+    
     getSequentialElement = Method(ptr(UndefValue))
     getStructElement = Method(ptr(UndefValue), cast(int, Unsigned))
 
@@ -98,7 +100,16 @@ class ConstantFP:
     isNegative = Method(cast(Bool, bool))
     isNaN = Method(cast(Bool, bool))
 
+    getFloat = CustomMethod('ConstantFP_get_float', PyObjectPtr)
+    getDouble = CustomMethod('ConstantFP_get_double', PyObjectPtr)
 
+@ConstantPointerNull
+class ConstantPointerNull:
+    _downcast_ = Constant, User, Value
+
+@ConstantAggregateZero
+class ConstantAggregateZero:
+    _downcast_ = Constant, User, Value
 
 @ConstantArray
 class ConstantArray:
@@ -142,6 +153,11 @@ class ConstantDataSequential:
     _downcast_ = Constant, User, Value
 
 
+    isCString = Method(cast(Bool, bool))
+    isString = Method(cast(Bool, bool))
+    getAsString = Method(cast(StringRef, str))
+    getAsCString = Method(cast(StringRef, str))
+
 @ConstantDataArray
 class ConstantDataArray:
     _downcast_ = Constant, User, Value
@@ -152,7 +168,9 @@ class ConstantDataArray:
                              cast(bool, Bool)
                              ).require_only(2)
 
-
+@ConstantDataVector
+class ConstantDataVector:
+    _downcast_ = Constant, User, Value
 
 def _factory(*args):
     return StaticMethod(ptr(Constant), *args)
