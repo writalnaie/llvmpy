@@ -727,6 +727,18 @@ PyObject* llvm_verifyModule(const llvm::Module& Fn,
 }
 
 static
+PyObject *ConstantFP_get_float(llvm::ConstantFP *fp)
+{
+    return py_float_from(fp->getValueAPF().convertToFloat());
+}
+
+static
+PyObject *ConstantFP_get_double(llvm::ConstantFP *fp)
+{
+    return py_float_from(fp->getValueAPF().convertToDouble());
+}
+
+static
 PyObject* ConstantArray_get(llvm::ArrayType* Ty, PyObject* Consts)
 {
     using namespace llvm;
